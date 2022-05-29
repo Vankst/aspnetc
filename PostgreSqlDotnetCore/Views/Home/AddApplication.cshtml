@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@using Microsoft.Extensions.DependencyInjection
+@using Npgsql
+@using System.Data.Common
+@using PostgreSqlDotnetCore.Views
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+<div class="text-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+         <form method="POST">
+          <label>Название:</label><br/>
+    <input type="text" name="name" /><br /><br/>
+     <input type="hidden" name="email" value="@UserManager.GetUserName(User)" />
+    <input type="submit" value="Добавить" />
+
+         </form>   
+  
+    }
+    else
+    {
+        <h2>Войдите в аккаунт</h2>
+    }
+
+</div>

@@ -1,0 +1,47 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@using PostgreSqlDotnetCore.Views
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav">
+@if (SignInManager.IsSignedIn(User)){
+
+
+           string hello = "";
+               int hours = int.Parse(DateTime.Now.ToString("HH"));
+            hello += "Добро";
+            if (hours >= 6 && hours < 12)
+                 hello += "е утро";
+            else if (hours >= 12 && hours < 18)
+                hello += "го дня";
+            else if (hours >= 18 && hours < 22)
+                hello += "го вечера";
+            else
+                hello += "й ночи";
+                string trimmed =  @UserManager.GetUserName(User).Trim();
+            string name = trimmed.Substring(0, trimmed.IndexOf('@'));
+            hello += ", " + name;
+
+          
+        <li class="nav-item">
+            <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@hello
+            </a>
+    </li>
+    <li class="nav-item">
+        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button  type="submit" class="nav-link btn btn-link text-dark">Выйти</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Авторизация</a>
+    </li>
+}
+</ul>
+

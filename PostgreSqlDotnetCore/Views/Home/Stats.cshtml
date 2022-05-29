@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@using Microsoft.Extensions.DependencyInjection
+@using Npgsql
+@using System.Data.Common
+@using PostgreSqlDotnetCore.Views
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+		
+
+	DB dB = new DB();
+         dB.statsApp(@UserManager.GetUserName(User), out int view, out int edit);
+	<h2 align="center">Статистика</h2>
+			<div class="row">
+					<canvas id="pie-graph"></canvas>
+	
+			</div>
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+		<script>
+
+			// Data for pie chart
+			var pieData = {
+				labels: [
+					"Просмотры",
+					"Изменения",
+				],
+				datasets: [{
+					data: [@view, @edit],
+					backgroundColor: [
+						"#FF6384",
+						"#36A2EB"
+
+					],
+					hoverBackgroundColor: [
+						"#FF6384",
+						"#36A2EB"
+					]
+				}]
+			};
+			var ctx = document.getElementById("pie-graph").getContext("2d");
+			var PieChart = new Chart(ctx, {
+				type: 'pie',
+				data: pieData
+			});
+			
+		</script>
+
+	
+
+    }
+    else{
+		  <h2>Войдите в аккаунт</h2>
+	}

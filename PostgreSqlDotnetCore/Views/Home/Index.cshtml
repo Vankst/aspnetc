@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@using Microsoft.Extensions.DependencyInjection
+@using Npgsql
+@using System.Data.Common
+@using PostgreSqlDotnetCore.Views
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+<div class="text-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+
+         DB dB = new DB();
+         dB.amountApp(@UserManager.GetUserName(User), out int amount);
+            
+        <p>Количество приложений = @amount</p>
+    }
+    else
+    {
+        
+    }
+
+</div>

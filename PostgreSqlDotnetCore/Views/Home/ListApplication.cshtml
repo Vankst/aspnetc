@@ -1,0 +1,96 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@using Microsoft.Extensions.DependencyInjection
+@using Npgsql
+@using System.Data.Common
+@using PostgreSqlDotnetCore.Views
+@using System.Data
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+<div class="text-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+         DB dB = new DB();
+        dB.view(@UserManager.GetUserName(User));
+        <h3>Список приложений</h3>
+        dB.con(out string connectionString);
+        <style>
+            .table {
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #dddddd;
+            border-collapse: collapse; 
+            }
+            .table th {
+            font-weight: bold;
+            padding: 5px;
+            background: #efefef;
+            border: 1px solid #dddddd;
+            }
+            .table td {
+            border: 1px solid #dddddd;
+            padding: 5px;
+            }
+            h3{
+                margin-bottom: 20px;
+            }
+
+                </style>
+
+        <table class="table">
+            <thead>
+		<tr>
+			<th>Название</th>
+			<th>Уникальный код</th>
+			<th>Дата добавления</th>
+
+		</tr>
+	</thead>
+	<tbody>
+
+                @{
+                    string name = string.Empty;
+                    string ucode = string.Empty;
+                    string date = string.Empty;
+                    NpgsqlConnection npgSqlConnection = new NpgsqlConnection(connectionString);
+                    npgSqlConnection.Open();
+                        
+                    NpgsqlCommand comm = new NpgsqlCommand
+            {
+                Connection = npgSqlConnection,
+                CommandType = CommandType.Text,
+                CommandText = $@"SELECT name, ucode, date FROM public.""AspNetUserApplication"" WHERE email = '{@UserManager.GetUserName(User)}';"
+               
+            };
+            NpgsqlDataReader dr = comm.ExecuteReader();
+            if (dr.HasRows)
+            {
+              foreach (DbDataRecord dbDataRecord in dr)
+                {
+                    name = dbDataRecord["name"].ToString();
+                    ucode = dbDataRecord["ucode"].ToString();
+                    date = dbDataRecord["date"].ToString();
+                    <tr>
+			            <td>@name</td>
+			            <td>@ucode</td>
+			            <td>@date</td>
+		            </tr>
+                }
+                   
+            }
+            comm.Dispose();
+            npgSqlConnection.Close();}
+            	</tbody>
+</table>
+    }
+    else
+    {
+        <h2>Войдите в аккаунт</h2>
+    }
+
+</div>
